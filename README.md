@@ -1,0 +1,2 @@
+# GoSessions
+Sessions for golang
