@@ -8,11 +8,13 @@ import (
 var fileSession ISessionStorage
 
 func TestMain(m *testing.M) {
-	fileSession = createSessionFileStorage(30)
+	fileSession = createSessionFileStorage(5)
 	retCode := m.Run()
 	os.Exit(retCode)
 }
 
 func TestCreateFileStorage(t *testing.T) {
+	for {
 
+	}
 }

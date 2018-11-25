@@ -1,7 +1,7 @@
 package sessions
 
 type ISessionStorage interface {
-	Sessions() []ISession
+	Sessions() map[string]ISession
 
 	Write(session ISession)
 	Update(session ISession)
