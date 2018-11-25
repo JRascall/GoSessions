@@ -1,6 +1,7 @@
 package sessions
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -8,7 +9,7 @@ import (
 	"time"
 )
 
-type SessionFileStorage struct {
+type sessionFileStorage struct {
 	sessions      map[string]ISession
 	cleanTimer    *time.Ticker
 	expiryMins    int
@@ -16,9 +17,10 @@ type SessionFileStorage struct {
 	fileExtension string
 }
 
-func createSessionFileStorage(expiryMins int) ISessionStorage {
+// CreateSessionFileStorage allows you create a session system using files
+func CreateSessionFileStorage(expiryMins int) ISessionStorage {
 	dir, _ := os.Getwd()
-	sessionFileStorage := &SessionFileStorage{
+	filestorage := &sessionFileStorage{
 		expiryMins:    expiryMins,
 		cleanTimer:    time.NewTicker(time.Duration(expiryMins) * time.Minute),
 		filePath:      fmt.Sprintf("%s/sessions", dir),
@@ -27,16 +29,16 @@ func createSessionFileStorage(expiryMins int) ISessionStorage {
 	}
 
 	go func() {
-		sessionFileStorage.Clean()
-		for _ = range sessionFileStorage.cleanTimer.C {
-			sessionFileStorage.Clean()
+		filestorage.Clean()
+		for _ = range filestorage.cleanTimer.C {
+			filestorage.Clean()
 		}
 	}()
 
-	return sessionFileStorage
+	return filestorage
 }
 
-func (s *SessionFileStorage) isFileValid(path string) bool {
+func (s *sessionFileStorage) isFileValid(path string) bool {
 	dotSplit := strings.Split(path, ".")
 	ext := dotSplit[len(dotSplit)-1]
 	if ext == s.fileExtension {
@@ -45,19 +47,27 @@ func (s *SessionFileStorage) isFileValid(path string) bool {
 	return false
 }
 
-func (s *SessionFileStorage) Sessions() map[string]ISession {
+// Sessions returns all the sessions
+func (s *sessionFileStorage) Sessions() map[string]ISession {
 	return s.sessions
 }
 
-func (s *SessionFileStorage) Write(session ISession) {
+// Write crates a new session and it's file
+func (s *sessionFileStorage) Write(session ISession) {
+	s.sessions[session.SSID()] = session
+	file, _ := os.Create(s.filePath + "/" + session.SSID() + "." + s.fileExtension)
+	json, _ := json.Marshal(session)
+	file.Write(json)
+	file.Close()
+}
+
+// Update allows you to update a sessions information
+func (s *sessionFileStorage) Update(session ISession) {
 
 }
 
-func (s *SessionFileStorage) Update(session ISession) {
-
-}
-
-func (s *SessionFileStorage) Delete(ssid string) {
+// Delete allows you to delete a session by its ssid
+func (s *sessionFileStorage) Delete(ssid string) {
 	if strings.Contains(ssid, "."+s.fileExtension) == false {
 		ssid = ssid + "." + s.fileExtension
 	}
@@ -69,11 +79,13 @@ func (s *SessionFileStorage) Delete(ssid string) {
 	os.Remove(fmt.Sprintf("%s/%s", s.filePath, ssid))
 }
 
-func (s *SessionFileStorage) Get(ssid string) ISession {
+// Get allows you to grab a session by it's ssid
+func (s *sessionFileStorage) Get(ssid string) ISession {
 	return s.sessions[ssid]
 }
 
-func (s *SessionFileStorage) Clean() {
+// Clean runs a clean up of the sessions
+func (s *sessionFileStorage) Clean() {
 	info, _ := ioutil.ReadDir(s.filePath)
 	for _, v := range info {
 		if name := v.Name(); s.isFileValid(name) {
@@ -84,6 +96,7 @@ func (s *SessionFileStorage) Clean() {
 	}
 }
 
-func (s *SessionFileStorage) Count() int {
+// Count returns the number of current sessions
+func (s *sessionFileStorage) Count() int {
 	return 0
 }
