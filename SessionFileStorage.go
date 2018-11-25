@@ -20,7 +20,14 @@ func createSessionFileStorage(expiryMins time.Duration) ISessionStorage {
 	}
 
 	dir, _ := os.Getwd()
-	fmt.Println(dir)
+	filePath := fmt.Sprintf("%s/sessions.json", dir)
+
+	file, err := os.Open(filePath)
+	if os.IsNotExist(err) {
+		os.Create(filePath)
+	}
+
+	sessionFileStorage.file = file
 
 	go func() {
 		for c := range sessionFileStorage.cleanTimer.C {

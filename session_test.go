@@ -1,11 +1,18 @@
 package sessions
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
-func TestCreatesession(t *testing.T) {
-	fileSession := createSessionFileStorage(30)
+var fileSession ISessionStorage
 
-	if fileSession != nil {
-		t.Error("Failed!")
-	}
+func TestMain(m *testing.M) {
+	fileSession = createSessionFileStorage(30)
+	retCode := m.Run()
+	os.Exit(retCode)
+}
+
+func TestCreateFileStorage(t *testing.T) {
+
 }
