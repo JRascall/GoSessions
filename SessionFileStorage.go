@@ -17,13 +17,12 @@ func createSessionFileStorage(expiryMins time.Duration) ISessionStorage {
 	}
 
 	go func() {
-		for c := range sessionFileStorage.cleanTimer.C {
-			_ = c
+		sessionFileStorage.Clean()
+		for _ = range sessionFileStorage.cleanTimer.C {
 			sessionFileStorage.Clean()
 		}
 	}()
 
-	sessionFileStorage.Clean()
 	return sessionFileStorage
 }
 
