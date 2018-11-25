@@ -1,11 +1,11 @@
 package sessions
 
 type ISession interface {
-	SSID() string
-	IP() string
-	Navigator() string
+	GetSSID() string
+	GetIP() string
+	GetNavigator() string
 
 	Add(key string, data interface{})
 	Delete(key string)
-	Get(key string) interface{}
+	Retrive(key string) interface{}
 }

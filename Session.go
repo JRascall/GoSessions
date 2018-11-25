@@ -1,29 +1,30 @@
 package sessions
 
 type Session struct {
-	ssid      string
-	ip        string
-	navigator string
+	SSID      string
+	IP        string
+	Navigator string
+	test      int
 }
 
 func createSession(ssid string) ISession {
 	return &Session{
-		ssid:      ssid,
-		ip:        "localhost",
-		navigator: "browser",
+		SSID:      ssid,
+		IP:        "localhost",
+		Navigator: "browser",
 	}
 }
 
-func (s *Session) SSID() string {
-	return s.ssid
+func (s *Session) GetSSID() string {
+	return s.SSID
 }
 
-func (s *Session) IP() string {
-	return s.ip
+func (s *Session) GetIP() string {
+	return s.IP
 }
 
-func (s *Session) Navigator() string {
-	return s.navigator
+func (s *Session) GetNavigator() string {
+	return s.Navigator
 }
 
 func (s *Session) Add(key string, data interface{}) {
@@ -34,6 +35,6 @@ func (s *Session) Delete(key string) {
 
 }
 
-func (s *Session) Get(key string) interface{} {
+func (s *Session) Retrive(key string) interface{} {
 	return nil
 }

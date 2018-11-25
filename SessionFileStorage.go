@@ -62,17 +62,18 @@ func (s *sessionFileStorage) Sessions() map[string]ISession {
 
 // Write crates a new session and it's file
 func (s *sessionFileStorage) Write(session ISession) {
-	s.sessions[session.SSID()] = session
-	file, _ := os.Create(s.filePath + "/" + session.SSID() + "." + s.fileExtension)
+	s.sessions[session.GetSSID()] = session
+	file, _ := os.Create(s.filePath + "/" + session.GetSSID() + "." + s.fileExtension)
 
 	sessMap := make(map[string]interface{})
-
 	Type := reflect.TypeOf(session).Elem()
 	val := reflect.ValueOf(session).Elem()
 	fields := val.NumField()
 	for i := 0; i < fields; i++ {
 		field := val.Field(i)
-		sessMap[Type.Field(i).Name] = field.String()
+		if field.CanInterface() {
+			sessMap[Type.Field(i).Name] = field.Interface()
+		}
 	}
 
 	data, err := json.Marshal(sessMap)
