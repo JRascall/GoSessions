@@ -1,11 +1,6 @@
 package sessions
 
-import (
-	"time"
-)
-
 type ISessionStorage interface {
-	ExpiryMinutes() time.Duration
 	Sessions() []ISession
 
 	Write(session ISession)

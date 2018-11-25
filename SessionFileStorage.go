@@ -1,8 +1,6 @@
 package sessions
 
 import (
-	"fmt"
-	"os"
 	"time"
 )
 
@@ -10,7 +8,6 @@ type SessionFileStorage struct {
 	sessions   []ISession
 	cleanTimer *time.Ticker
 	expiryMins time.Duration
-	file       *os.File
 }
 
 func createSessionFileStorage(expiryMins time.Duration) ISessionStorage {
@@ -18,16 +15,6 @@ func createSessionFileStorage(expiryMins time.Duration) ISessionStorage {
 		expiryMins: expiryMins,
 		cleanTimer: time.NewTicker(expiryMins * time.Minute),
 	}
-
-	dir, _ := os.Getwd()
-	filePath := fmt.Sprintf("%s/sessions.json", dir)
-
-	file, err := os.Open(filePath)
-	if os.IsNotExist(err) {
-		os.Create(filePath)
-	}
-
-	sessionFileStorage.file = file
 
 	go func() {
 		for c := range sessionFileStorage.cleanTimer.C {
@@ -38,10 +25,6 @@ func createSessionFileStorage(expiryMins time.Duration) ISessionStorage {
 
 	sessionFileStorage.Clean()
 	return sessionFileStorage
-}
-
-func (s *SessionFileStorage) ExpiryMinutes() time.Duration {
-	return s.expiryMins
 }
 
 func (s *SessionFileStorage) Sessions() []ISession {
