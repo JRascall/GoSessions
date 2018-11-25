@@ -1,4 +1,4 @@
-package main
+package sessions
 
 type ISession interface {
 	SSID() string

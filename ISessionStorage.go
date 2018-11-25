@@ -1,4 +1,4 @@
-package main
+package sessions
 
 import (
 	"time"
@@ -11,7 +11,6 @@ type ISessionStorage interface {
 	Write(session ISession)
 	Update(session ISession)
 	Delete(ssid string)
-	LoadAll() []ISession
 	Get(ssid string) ISession
 	Clean()
 	Count() int
