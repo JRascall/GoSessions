@@ -2,23 +2,20 @@ package sessions
 
 type Session struct {
 	ssid      string
-	expiry    string
 	ip        string
 	navigator string
 }
 
 func createSession(ssid string) ISession {
 	return &Session{
-		ssid: ssid,
+		ssid:      ssid,
+		ip:        "localhost",
+		navigator: "browser",
 	}
 }
 
 func (s *Session) SSID() string {
 	return s.ssid
-}
-
-func (s *Session) Expiry() string {
-	return s.expiry
 }
 
 func (s *Session) IP() string {

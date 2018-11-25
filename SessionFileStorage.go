@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -15,6 +17,12 @@ type sessionFileStorage struct {
 	expiryMins    int
 	filePath      string
 	fileExtension string
+}
+
+type sessionFile struct {
+	IP        string
+	Navigator string
+	Data      map[string]interface{}
 }
 
 // CreateSessionFileStorage allows you create a session system using files
@@ -56,8 +64,22 @@ func (s *sessionFileStorage) Sessions() map[string]ISession {
 func (s *sessionFileStorage) Write(session ISession) {
 	s.sessions[session.SSID()] = session
 	file, _ := os.Create(s.filePath + "/" + session.SSID() + "." + s.fileExtension)
-	json, _ := json.Marshal(session)
-	file.Write(json)
+
+	sessMap := make(map[string]interface{})
+
+	Type := reflect.TypeOf(session).Elem()
+	val := reflect.ValueOf(session).Elem()
+	fields := val.NumField()
+	for i := 0; i < fields; i++ {
+		field := val.Field(i)
+		sessMap[Type.Field(i).Name] = field.String()
+	}
+
+	data, err := json.Marshal(sessMap)
+	if err != nil {
+		log.Fatal(err)
+	}
+	file.Write(data)
 	file.Close()
 }
 

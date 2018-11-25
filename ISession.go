@@ -2,7 +2,6 @@ package sessions
 
 type ISession interface {
 	SSID() string
-	Expiry() string
 	IP() string
 	Navigator() string
 
